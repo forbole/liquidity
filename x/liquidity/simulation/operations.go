@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -110,7 +109,7 @@ func SimulateMsgCreatePool(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 		}
 
 		account := ak.GetAccount(ctx, simAccount.Address)
-		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+		// spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		poolName := types.PoolName(reserveCoinDenoms, types.DefaultPoolTypeID)
 		reserveAcc := types.GetPoolReserveAcc(poolName, false)
 
@@ -143,27 +142,27 @@ func SimulateMsgCreatePool(ak types.AccountKeeper, bk types.BankKeeper, k keeper
 
 		msg := types.NewMsgCreatePool(poolCreator, types.DefaultPoolTypeID, depositCoins)
 
-		fees, err := randomFees(r, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "unable to generate fees"), nil, err
-		}
+		// fees, err := randomFees(r, spendable)
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreatePool, "unable to generate fees"), nil, err
+		// }
 
 		txGen := liquidityparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			simAccount.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
-		}
+		// tx, err := helpers.GenTx(
+		// 	txGen,
+		// 	[]sdk.Msg{msg},
+		// 	fees,
+		// 	helpers.DefaultGenTxGas,
+		// 	chainID,
+		// 	[]uint64{account.GetAccountNumber()},
+		// 	[]uint64{account.GetSequence()},
+		// 	simAccount.PrivKey,
+		// )
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		// }
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), nil)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -203,7 +202,7 @@ func SimulateMsgDepositWithinBatch(ak types.AccountKeeper, bk types.BankKeeper, 
 		k.SetParams(ctx, params)
 
 		account := ak.GetAccount(ctx, simAccount.Address)
-		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+		// spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		depositor := account.GetAddress()
 		depositCoinA := randomDepositCoin(r, params.MinInitDepositAmount, reserveCoinDenomA)
 		depositCoinB := randomDepositCoin(r, params.MinInitDepositAmount, reserveCoinDenomB)
@@ -217,29 +216,29 @@ func SimulateMsgDepositWithinBatch(ak types.AccountKeeper, bk types.BankKeeper, 
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositWithinBatch, "can not exceed reserve coin limit amount"), nil, nil
 		}
 
-		fees, err := randomFees(r, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositWithinBatch, "unable to generate fees"), nil, err
-		}
+		// fees, err := randomFees(r, spendable)
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgDepositWithinBatch, "unable to generate fees"), nil, err
+		// }
 
 		msg := types.NewMsgDepositWithinBatch(depositor, pool.Id, depositCoins)
 
 		txGen := liquidityparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			simAccount.PrivKey,
-		)
+		// tx, err := helpers.GenTx(
+		// 	txGen,
+		// 	[]sdk.Msg{msg},
+		// 	fees,
+		// 	helpers.DefaultGenTxGas,
+		// 	chainID,
+		// 	[]uint64{account.GetAccountNumber()},
+		// 	[]uint64{account.GetSequence()},
+		// 	simAccount.PrivKey,
+		// )
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), nil)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -279,34 +278,34 @@ func SimulateMsgWithdrawWithinBatch(ak types.AccountKeeper, bk types.BankKeeper,
 		}
 
 		account := ak.GetAccount(ctx, simAccount.Address)
-		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+		// spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		balance := bk.GetBalance(ctx, simAccount.Address, poolCoinDenom)
 		withdrawer := account.GetAddress()
 		withdrawCoin := randomWithdrawCoin(r, poolCoinDenom, balance.Amount)
 
 		msg := types.NewMsgWithdrawWithinBatch(withdrawer, pool.Id, withdrawCoin)
 
-		fees, err := randomFees(r, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgWithdrawWithinBatch, "unable to generate fees"), nil, err
-		}
+		// fees, err := randomFees(r, spendable)
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgWithdrawWithinBatch, "unable to generate fees"), nil, err
+		// }
 
 		txGen := liquidityparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			simAccount.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
-		}
+		// tx, err := helpers.GenTx(
+		// 	txGen,
+		// 	[]sdk.Msg{msg},
+		// 	fees,
+		// 	helpers.DefaultGenTxGas,
+		// 	chainID,
+		// 	[]uint64{account.GetAccountNumber()},
+		// 	[]uint64{account.GetSequence()},
+		// 	simAccount.PrivKey,
+		// )
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		// }
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), nil)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
@@ -342,7 +341,7 @@ func SimulateMsgSwapWithinBatch(ak types.AccountKeeper, bk types.BankKeeper, k k
 		}
 
 		account := ak.GetAccount(ctx, simAccount.Address)
-		spendable := bk.SpendableCoins(ctx, account.GetAddress())
+		// spendable := bk.SpendableCoins(ctx, account.GetAddress())
 		swapRequester := account.GetAddress()
 		offerCoin := randomOfferCoin(r, k, ctx, pool, pool.ReserveCoinDenoms[0])
 		demandCoinDenom := pool.ReserveCoinDenoms[1]
@@ -356,27 +355,27 @@ func SimulateMsgSwapWithinBatch(ak types.AccountKeeper, bk types.BankKeeper, k k
 
 		msg := types.NewMsgSwapWithinBatch(swapRequester, pool.Id, types.DefaultSwapTypeID, offerCoin, demandCoinDenom, orderPrice, swapFeeRate)
 
-		fees, err := randomFees(r, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapWithinBatch, "unable to generate fees"), nil, err
-		}
+		// fees, err := randomFees(r, spendable)
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgSwapWithinBatch, "unable to generate fees"), nil, err
+		// }
 
 		txGen := liquidityparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			simAccount.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
-		}
+		// tx, err := helpers.GenTx(
+		// 	txGen,
+		// 	[]sdk.Msg{msg},
+		// 	fees,
+		// 	helpers.DefaultGenTxGas,
+		// 	chainID,
+		// 	[]uint64{account.GetAccountNumber()},
+		// 	[]uint64{account.GetSequence()},
+		// 	simAccount.PrivKey,
+		// )
+		// if err != nil {
+		// 	return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		// }
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		_, _, err = app.Deliver(txGen.TxEncoder(), nil)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
